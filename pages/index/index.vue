@@ -30,49 +30,42 @@
 		<view class="main">
 			<!-- 左侧分类 -->
 			<scroll-view class="cats" scroll-y>
-				<view
-					v-for="(c, idx) in categories"
-					:key="c.id"
-					:class="['cat-item', activeCategoryIndex === idx ? 'is-active' : '']"
-					@tap="selectCategory(idx)"
-				>
+				<view v-for="(c, idx) in categories" :key="c.id"
+					:class="['cat-item', activeCategoryIndex === idx ? 'is-active' : '']" @tap="selectCategory(idx)">
 					<text class="cat-item__name">{{ c.name }}</text>
 					<view v-if="cCount(c.id) > 0" class="cat-item__badge">{{ cCount(c.id) }}</view>
 				</view>
 			</scroll-view>
 
 			<!-- 右侧商品列表（分组 + 联动） -->
-			<scroll-view
-				class="goods"
-				scroll-y
-				:scroll-into-view="goodsScrollIntoView"
-				scroll-with-animation
-				@scroll="onGoodsScroll"
-			>
+			<scroll-view class="goods" scroll-y :scroll-into-view="goodsScrollIntoView" scroll-with-animation
+				@scroll="onGoodsScroll">
 				<view v-for="c in categories" :key="c.id" :id="`cat-${c.id}`" class="goods__section">
 					<view class="goods__section-title">{{ c.name }}</view>
 
 					<view v-for="g in goodsByCategory(c.id)" :key="g.id" class="good-card">
-					<view class="good-card__media" @tap="openDetail(g)">
-						<image class="good-card__img" :src="g.image" mode="aspectFill" @load="onGoodImageLoad" />
-					</view>
-					<view class="good-card__body" @tap="openDetail(g)">
-						<text class="good-card__name">{{ g.name }}</text>
-						<text class="good-card__desc">{{ g.desc }}</text>
-						<view class="good-card__price-row">
-							<text class="good-card__price">¥{{ g.price }}/份</text>
+						<view class="good-card__media" @tap="openDetail(g)">
+							<image class="good-card__img" :src="g.image" mode="aspectFill" @load="onGoodImageLoad" />
 						</view>
-					</view>
-					<view class="good-card__action">
-						<view v-if="itemCount(g.id) === 0" class="plus-btn" @tap.stop="add(g)">
-							<text class="plus-btn__text">＋</text>
+						<view class="good-card__body" @tap="openDetail(g)">
+							<text class="good-card__name">{{ g.name }}</text>
+							<text class="good-card__desc">{{ g.desc }}</text>
+							<view class="good-card__price-row">
+								<text class="good-card__price">¥{{ g.price }}/份</text>
+							</view>
 						</view>
-						<view v-else class="stepper" @tap.stop>
-							<view class="stepper__btn" @tap.stop="dec(g)"><text class="stepper__btn-text">－</text></view>
-							<text class="stepper__count">{{ itemCount(g.id) }}</text>
-							<view class="stepper__btn is-plus" @tap.stop="add(g)"><text class="stepper__btn-text">＋</text></view>
+						<view class="good-card__action">
+							<view v-if="itemCount(g.id) === 0" class="plus-btn" @tap.stop="add(g)">
+								<text class="plus-btn__text">＋</text>
+							</view>
+							<view v-else class="stepper" @tap.stop>
+								<view class="stepper__btn" @tap.stop="dec(g)"><text class="stepper__btn-text">－</text>
+								</view>
+								<text class="stepper__count">{{ itemCount(g.id) }}</text>
+								<view class="stepper__btn is-plus" @tap.stop="add(g)"><text
+										class="stepper__btn-text">＋</text></view>
+							</view>
 						</view>
-					</view>
 					</view>
 				</view>
 			</scroll-view>
@@ -101,17 +94,28 @@
 			<image class="sheet__img" :src="currentGood?.image" mode="aspectFill" />
 			<view class="sheet__content">
 				<text class="sheet__name">{{ currentGood?.name }}</text>
-				<text class="sheet__desc">{{ currentGood?.desc }}（模拟描述）</text>
+				<view class="sheet__info-row">
+					<text class="sheet__label">原材料：</text>
+					<text class="sheet__value">{{ currentGood?.ingredients || '暂无' }}</text>
+				</view>
+				<view class="sheet__info-row">
+					<text class="sheet__label">做法：</text>
+					<text class="sheet__value">{{ currentGood?.method || '暂无' }}</text>
+				</view>
+				<text class="sheet__desc">{{ currentGood?.desc }}</text>
 				<view class="sheet__bottom">
 					<text class="sheet__price">¥{{ currentGood?.price }}/份</text>
 					<view class="sheet__step">
-						<view v-if="currentGood && itemCount(currentGood.id) === 0" class="sheet__add" @tap="add(currentGood)">
+						<view v-if="currentGood && itemCount(currentGood.id) === 0" class="sheet__add"
+							@tap="add(currentGood)">
 							<text class="sheet__add-text">加入购物车</text>
 						</view>
 						<view v-else class="stepper" @tap.stop>
-							<view class="stepper__btn" @tap.stop="dec(currentGood)"><text class="stepper__btn-text">－</text></view>
+							<view class="stepper__btn" @tap.stop="dec(currentGood)"><text
+									class="stepper__btn-text">－</text></view>
 							<text class="stepper__count">{{ currentGood ? itemCount(currentGood.id) : 0 }}</text>
-							<view class="stepper__btn is-plus" @tap.stop="add(currentGood)"><text class="stepper__btn-text">＋</text></view>
+							<view class="stepper__btn is-plus" @tap.stop="add(currentGood)"><text
+									class="stepper__btn-text">＋</text></view>
 						</view>
 					</view>
 				</view>
@@ -132,7 +136,7 @@
 					<text class="clear-text">清空购物车</text>
 				</view>
 			</view>
-			
+
 			<!-- 列表区域 -->
 			<scroll-view class="cart-list" scroll-y>
 				<view v-for="it in store.state.cart" :key="it._key" class="cart-row">
@@ -144,19 +148,21 @@
 							<text class="cart-row__unit">/份</text>
 						</view>
 					</view>
-					
+
 					<view class="cart-row__action">
 						<view class="stepper" @tap.stop>
-							<view class="stepper__btn" @tap.stop="store.updateQuantity(it._key, -1)"><text class="stepper__btn-text">－</text></view>
+							<view class="stepper__btn" @tap.stop="store.updateQuantity(it._key, -1)"><text
+									class="stepper__btn-text">－</text></view>
 							<text class="stepper__count">{{ it.quantity }}</text>
-							<view class="stepper__btn is-plus" @tap.stop="store.updateQuantity(it._key, 1)"><text class="stepper__btn-text">＋</text></view>
+							<view class="stepper__btn is-plus" @tap.stop="store.updateQuantity(it._key, 1)"><text
+									class="stepper__btn-text">＋</text></view>
 						</view>
 					</view>
 				</view>
 				<!-- 底部留白 -->
 				<view style="height: 20rpx;"></view>
 			</scroll-view>
-			
+
 			<!-- 底部固定栏 -->
 			<!-- 注意：这里不需要重复写 .cartbar，因为 .sheet 已经有 bottom: window-bottom 
 			     但通常购物车弹起时，底部的结算条应该被包含在内或者隐藏原来的 floating bar
@@ -172,6 +178,11 @@
 			</view>
 		</view>
 	</view>
+
+	<!-- Back to Top Button -->
+	<view v-if="showBackToTop" class="back-top" @tap="scrollToTop">
+		<text class="back-top__icon">↑</text>
+	</view>
 </template>
 
 <script setup>
@@ -179,318 +190,9 @@ import { computed, inject, nextTick, onMounted, ref } from 'vue'
 
 const store = inject('store')
 
-// --- 模拟数据 ---
-const categories = ref([
-	{ id: 'new', name: '新锅上市' },
-	{ id: 'fish', name: '烤鱼涮菜' },
-	{ id: 'fried', name: '炸货' },
-	{ id: 'bbq', name: '烧烤' },
-	{ id: 'snack', name: '美味小食' },
-	{ id: 'wine', name: '喝点小酒' }
-])
-
-// 说明：为了能明显看出“右侧滚动 + 左侧联动”，这里每个分类都放多条数据
-const goods = ref([
-	// 新锅上市
-	{
-		id: 'g1',
-		categoryId: 'new',
-		name: '海带苗',
-		desc: '爽脆开胃，适合涮煮',
-		price: 16,
-		image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g2',
-		categoryId: 'new',
-		name: '脆竹笋',
-		desc: '清爽脆嫩，口感扎实',
-		price: 14,
-		image: 'https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g3',
-		categoryId: 'new',
-		name: '金针菇',
-		desc: '菌香浓郁，越煮越入味',
-		price: 16,
-		image: 'https://images.unsplash.com/photo-1604909053193-9b1a0a0a0c4a?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g6',
-		categoryId: 'new',
-		name: '土豆片',
-		desc: '软糯香甜，吸汤入味',
-		price: 10,
-		image: 'https://images.unsplash.com/photo-1604909054034-c1af9cbd8768?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g7',
-		categoryId: 'new',
-		name: '贡菜',
-		desc: '爽脆清香，越涮越脆',
-		price: 12,
-		image: 'https://images.unsplash.com/photo-1550317138-10000687a72b?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g8',
-		categoryId: 'new',
-		name: '豆腐皮',
-		desc: '豆香浓郁，口感筋道',
-		price: 11,
-		image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60'
-	},
-
-	// 烤鱼涮菜
-	{
-		id: 'g9',
-		categoryId: 'fish',
-		name: '藕片',
-		desc: '爽脆可口',
-		price: 12,
-		image: 'https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g10',
-		categoryId: 'fish',
-		name: '娃娃菜',
-		desc: '清甜爽口',
-		price: 9,
-		image: 'https://images.unsplash.com/photo-1540914124281-342587941389?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g11',
-		categoryId: 'fish',
-		name: '宽粉',
-		desc: 'Q弹筋道，吸汁更香',
-		price: 8,
-		image: 'https://images.unsplash.com/photo-1604909053158-2d2a3b7d6c02?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g12',
-		categoryId: 'fish',
-		name: '鱼豆腐',
-		desc: '鲜香软嫩',
-		price: 13,
-		image: 'https://images.unsplash.com/photo-1604909053115-b17b54c32dce?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g13',
-		categoryId: 'fish',
-		name: '腐竹',
-		desc: '豆香浓郁，越煮越入味',
-		price: 15,
-		image: 'https://images.unsplash.com/photo-1604909053055-17e4430ebdc8?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g14',
-		categoryId: 'fish',
-		name: '生菜',
-		desc: '清爽解腻',
-		price: 8,
-		image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=60'
-	},
-
-	// 炸货
-	{
-		id: 'g15',
-		categoryId: 'fried',
-		name: '炸鸡柳',
-		desc: '外酥里嫩',
-		price: 18,
-		image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g16',
-		categoryId: 'fried',
-		name: '炸薯条',
-		desc: '香脆可口',
-		price: 15,
-		image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g17',
-		categoryId: 'fried',
-		name: '炸洋葱圈',
-		desc: '外酥内甜',
-		price: 14,
-		image: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g18',
-		categoryId: 'fried',
-		name: '炸鸡米花',
-		desc: '一口一个',
-		price: 16,
-		image: 'https://images.unsplash.com/photo-1626082929543-1f3fdd7f7f8a?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g19',
-		categoryId: 'fried',
-		name: '炸年糕',
-		desc: '糯叽叽更香',
-		price: 12,
-		image: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g20',
-		categoryId: 'fried',
-		name: '炸蘑菇',
-		desc: '菌香酥脆',
-		price: 15,
-		image: 'https://images.unsplash.com/photo-1625944523994-2b83cd8b67f5?auto=format&fit=crop&w=1200&q=60'
-	},
-
-	// 烧烤
-	{
-		id: 'g21',
-		categoryId: 'bbq',
-		name: '羊肉串',
-		desc: '孜然香浓',
-		price: 6,
-		image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g22',
-		categoryId: 'bbq',
-		name: '鸡翅',
-		desc: '外焦里嫩',
-		price: 12,
-		image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g23',
-		categoryId: 'bbq',
-		name: '烤香肠',
-		desc: '咸香多汁',
-		price: 8,
-		image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g24',
-		categoryId: 'bbq',
-		name: '烤玉米',
-		desc: '香甜软糯',
-		price: 10,
-		image: 'https://images.unsplash.com/photo-1598514982077-efb9c2c8f3c2?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g25',
-		categoryId: 'bbq',
-		name: '烤茄子',
-		desc: '蒜香浓郁',
-		price: 14,
-		image: 'https://images.unsplash.com/photo-1625944523994-2b83cd8b67f5?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g26',
-		categoryId: 'bbq',
-		name: '烤韭菜',
-		desc: '香气十足',
-		price: 6,
-		image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1200&q=60'
-	},
-
-	// 美味小食
-	{
-		id: 'g27',
-		categoryId: 'snack',
-		name: '毛豆',
-		desc: '下酒小菜',
-		price: 10,
-		image: 'https://images.unsplash.com/photo-1532634896-26909d0d4bfe?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g28',
-		categoryId: 'snack',
-		name: '拍黄瓜',
-		desc: '清爽解腻',
-		price: 9,
-		image: 'https://images.unsplash.com/photo-1625944524083-7daaf79cd13e?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g29',
-		categoryId: 'snack',
-		name: '花生米',
-		desc: '香脆可口',
-		price: 8,
-		image: 'https://images.unsplash.com/photo-1598514982060-9a79b62f06b4?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g30',
-		categoryId: 'snack',
-		name: '凉拌木耳',
-		desc: '爽脆弹牙',
-		price: 11,
-		image: 'https://images.unsplash.com/photo-1604909053178-d6d3c6c2a5e4?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g31',
-		categoryId: 'snack',
-		name: '凉拌海带丝',
-		desc: '酸辣开胃',
-		price: 10,
-		image: 'https://images.unsplash.com/photo-1526318896989-ef7c0a0f4a87?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g32',
-		categoryId: 'snack',
-		name: '小酥肉',
-		desc: '酥香不腻',
-		price: 18,
-		image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=1200&q=60'
-	},
-
-	// 喝点小酒
-	{
-		id: 'g33',
-		categoryId: 'wine',
-		name: '喜力啤酒',
-		desc: '冰爽畅饮（活动价）',
-		price: 6,
-		image: 'https://images.unsplash.com/photo-1514361892635-eae31a0f8d98?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g34',
-		categoryId: 'wine',
-		name: '青岛啤酒',
-		desc: '经典口味',
-		price: 8,
-		image: 'https://images.unsplash.com/photo-1514361892635-eae31a0f8d98?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g35',
-		categoryId: 'wine',
-		name: '可乐',
-		desc: '冰镇更爽',
-		price: 5,
-		image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g36',
-		categoryId: 'wine',
-		name: '雪碧',
-		desc: '气泡十足',
-		price: 5,
-		image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g37',
-		categoryId: 'wine',
-		name: '酸梅汤',
-		desc: '解腻佳品',
-		price: 7,
-		image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=60'
-	},
-	{
-		id: 'g38',
-		categoryId: 'wine',
-		name: '柠檬水',
-		desc: '清爽回甘',
-		price: 6,
-		image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=60'
-	}
-])
+// --- 数据源 (从 store 获取) ---
+const categories = computed(() => store.state.categories)
+const goods = computed(() => store.state.goods)
 
 const activeCategoryIndex = ref(0)
 const activeCategory = computed(() => categories.value[activeCategoryIndex.value])
@@ -501,6 +203,7 @@ const goodsByCategory = (categoryId) => goods.value.filter(g => g.categoryId ===
 const showDetail = ref(false)
 const showCart = ref(false)
 const currentGood = ref(null)
+const showBackToTop = ref(false)
 
 const itemCount = (goodId) => {
 	// 购物车里同一个菜品可能有不同规格；此 demo 没规格，按 id 汇总
@@ -578,6 +281,7 @@ onMounted(async () => {
 const onGoodsScroll = (e) => {
 	if (isProgrammaticScroll.value) return
 	const st = Number(e?.detail?.scrollTop || 0)
+	showBackToTop.value = st > 300
 	if (!sectionRanges.value.length) return
 
 	// 让标题「接近顶部」时就切换，高亮更跟手
@@ -657,7 +361,11 @@ const onGoodImageLoad = () => {
 }
 
 const onManage = () => {
-	uni.showToast({ title: '菜品管理：功能开发中', icon: 'none' })
+	uni.navigateTo({ url: '/pages/admin/dish-management' })
+}
+
+const scrollToTop = () => {
+	selectCategory(0)
 }
 </script>
 
@@ -665,7 +373,8 @@ const onManage = () => {
 .page {
 	min-height: 100vh;
 	background: #f5f6f8;
-	padding-bottom: 120rpx; /* 给底部购物车栏留空间 */
+	padding-bottom: 120rpx;
+	/* 给底部购物车栏留空间 */
 }
 
 .header {
@@ -1050,7 +759,7 @@ const onManage = () => {
 	width: 60rpx;
 	height: 60rpx;
 	border-radius: 30rpx;
-	background: rgba(0,0,0,0.08);
+	background: rgba(0, 0, 0, 0.08);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1117,7 +826,7 @@ const onManage = () => {
 	border-radius: 24rpx 24rpx 0 0;
 	display: flex;
 	flex-direction: column;
-	max-height: 80vh; 
+	max-height: 80vh;
 	/* z-index and bottom positioning inherited from .sheet */
 }
 
@@ -1126,7 +835,8 @@ const onManage = () => {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: #fff; /* Sticky header feel */
+	background-color: #fff;
+	/* Sticky header feel */
 	border-bottom: 2rpx solid #f5f5f5;
 }
 
@@ -1165,7 +875,7 @@ const onManage = () => {
 
 .cart-list {
 	padding: 0 30rpx;
-	max-height: 50vh; 
+	max-height: 50vh;
 }
 
 .cart-row {
@@ -1201,9 +911,9 @@ const onManage = () => {
 	font-weight: bold;
 	color: #333;
 	margin-bottom: 8rpx;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .cart-row__meta {
@@ -1265,12 +975,59 @@ const onManage = () => {
 }
 
 /* Original Inherited Styles for Override */
-.sheet__title-row, .sheet__list, .sheet__footer {
-	display: none; 
+.sheet__title-row,
+.sheet__list,
+.sheet__footer {
+	display: none;
 }
+
 /* Re-enable display for new classes that might clash with old selectors in css block (tho we replaced template) */
-.cart-header, .cart-list, .cart-footer {
+.cart-header,
+.cart-list,
+.cart-footer {
 	display: flex;
 }
-.cart-list { display: block; }
+
+.cart-list {
+	display: block;
+}
+
+.sheet__info-row {
+	display: flex;
+	margin-top: 12rpx;
+	font-size: 26rpx;
+}
+
+.sheet__label {
+	color: #666;
+	min-width: 110rpx;
+	font-weight: bold;
+}
+
+.sheet__value {
+	color: #333;
+	flex: 1;
+	line-height: 1.4;
+}
+
+.back-top {
+	position: fixed;
+	right: 30rpx;
+	bottom: 240rpx;
+	width: 80rpx;
+	height: 80rpx;
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 50%;
+	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 90;
+}
+
+.back-top__icon {
+	font-size: 40rpx;
+	color: #333;
+	font-weight: bold;
+}
 </style>

@@ -17,6 +17,12 @@
 			"style": {
 				"navigationBarTitleText": "预点餐"
 			}
+		},
+		{
+			"path": "pages/admin/dish-management",
+			"style": {
+				"navigationBarTitleText": "菜品管理"
+			}
 		}
 	],
 	"tabBar": {
